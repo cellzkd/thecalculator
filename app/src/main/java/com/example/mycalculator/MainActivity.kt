@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onDigit(view: View) {
-
         tvInput?.append((view as Button).text)
-        lastNumeric = true
+        lastNumeric = false
         lastDot = false
-
     }
 
     fun onClear(view: View) {
         tvInput?.text = ""
+        lastNumeric = false
+        lastDot = false
     }
 
     fun onDecimal(view: View) {
@@ -44,68 +44,105 @@ class MainActivity : AppCompatActivity() {
 
     fun onOperator(view: View) {
         tvInput?.text?.let {
-
-            if (lastNumeric && !isOperatorAdded(it.toString())) {
+            if (!lastNumeric && !isOperatorAdded(it.toString())) {
                 tvInput?.append((view as Button).text)
                 lastNumeric = false
                 lastDot = false
             }
         }
-
     }
 
     fun onEqual(view: View) {
-        if (lastNumeric) {
+        // If the last input is a number only, solution can be found.
+        if (!lastNumeric) {
+            // Read the textView value
             var tvValue = tvInput?.text.toString()
-            var prefix = "-"
+            var prefix = ""
             try {
+
+                // Here if the value starts with '-' then we will separate it and perform the calculation with value.
                 if (tvValue.startsWith("-")) {
-                     var prefix = "-"
+                    prefix = "-"
                     tvValue = tvValue.substring(1)
                 }
-                if (tvValue.contains("-")) {
-                    var splitValue = tvValue.split("-")
-                    var one = splitValue[0]
-                    var two = splitValue[1]
-                    // var result =
-                    if (prefix.isNotEmpty()) {
-                        one = prefix + 1
+
+                // If the inputValue contains the Division operator
+                when {
+                    tvValue.contains("/") -> {
+                        // Will split the inputValue using Division operator
+                        val splitedValue = tvValue.split("/")
+
+                        var one = splitedValue[0] // Value One
+                        val two = splitedValue[1] // Value Two
+
+                        if (prefix.isNotEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                            one = prefix + one
+                        }
+
+                        /*Here as the value one and two will be calculated based on the operator and
+                                if the result contains the zero after decimal point will remove it.
+                                And display the result to TextView*/
+                        tvInput?.text = removeZeroAfterDot((one.toDouble() / two.toDouble()).toString())
                     }
-                    tvInput?.text = removeZeroAfterDot((one.toDouble() - two.toDouble()).toString())
-                } else if (tvValue.contains("+")) {
-                    var splitValue = tvValue.split("+")
-                    var one = splitValue[0]
-                    var two = splitValue[1]
-                    // var result =
-                    if (prefix.isNotEmpty()) {
-                        one = prefix + 1
+                    tvValue.contains("*") -> {
+                        // If the inputValue contains the Multiplication operator
+                        // Will split the inputValue using Multiplication operator
+                        val splitedValue = tvValue.split("*")
+
+                        var one = splitedValue[0] // Value One
+                        val two = splitedValue[1] // Value Two
+
+                        if (prefix.isNotEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                            one = prefix + one
+                        }
+
+                        /** Here as the value one and two will be calculated based on the operator and
+                        if the result contains the zero after decimal point will remove it.
+                        And display the result to TextView
+                         */
+                        tvInput?.text = removeZeroAfterDot((one.toDouble() * two.toDouble()).toString())
                     }
-                    tvInput?.text = removeZeroAfterDot((one.toDouble() + two.toDouble()).toString())
-                } else if (tvValue.contains("/")) {
-                    var splitValue = tvValue.split("/")
-                    var one = splitValue[0]
-                    var two = splitValue[1]
-                    // var result =
-                    if (prefix.isNotEmpty()) {
-                        one = prefix + 1
+                    tvValue.contains("-") -> {
+
+                        // If the inputValue contains the Subtraction operator
+                        // Will split the inputValue using Subtraction operator
+                        val splitedValue = tvValue.split("-")
+
+                        var one = splitedValue[0] // Value One
+                        val two = splitedValue[1] // Value Two
+
+                        if (prefix.isNotEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                            one = prefix + one
+                        }
+
+                        /** Here as the value one and two will be calculated based on the operator and
+                        if the result contains the zero after decimal point will remove it.
+                        And display the result to TextView
+                         */
+                        tvInput?.text = removeZeroAfterDot((one.toDouble() - two.toDouble()).toString())
                     }
-                    tvInput?.text = removeZeroAfterDot((one.toDouble() / two.toDouble()).toString())
-                } else if (tvValue.contains("*")) {
-                    var splitValue = tvValue.split("*")
-                    var one = splitValue[0]
-                    var two = splitValue[1]
-                    // var result =
-                    if (prefix.isNotEmpty()) {
-                        one = prefix + 1
+                    tvValue.contains("+") -> {
+                        // If the inputValue contains the Addition operator
+                        // Will split the inputValue using Addition operator
+                        val splitedValue = tvValue.split("+")
+
+                        var one = splitedValue[0] // Value One
+                        val two = splitedValue[1] // Value Two
+
+                        if (prefix.isNotEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                            one = prefix + one
+                        }
+
+                        /**Here as the value one and two will be calculated based on the operator and
+                        if the result contains the zero after decimal point will remove it.
+                        And display the result to TextView
+                         */
+                        tvInput?.text = removeZeroAfterDot((one.toDouble() + two.toDouble()).toString())
                     }
-                    tvInput?.text = removeZeroAfterDot((one.toDouble() * two.toDouble()).toString())
                 }
-
-
             } catch (e: ArithmeticException) {
                 e.printStackTrace()
             }
-
         }
     }
 
